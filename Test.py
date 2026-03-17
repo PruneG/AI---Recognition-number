@@ -22,7 +22,27 @@ test_binary_image = recognizer.binarize(test_gray_image)
 test_resized_image = recognizer.normalize_size(test_binary_image)
 test_matrix = recognizer.convert_to_matrix(test_resized_image)
 
-# Comparaison avec l'image de référence
-result = recognizer.compare_matrices(recognizer.reference_database["1"], test_matrix)
 
-print("Résultat de la comparaison avec une image différente :", result)
+# Maintenant que j'ai crée une fonction qui construit une base de données de référence à partir d'un dossier d'images et du mapping des labels
+# Je vais tester la reconnaissance d'une image en utilisant cette base de données
+label_mapping = {
+    "Group 12": "1",
+    "Group 13": "2",
+    "Group 14": "3",
+    "Group 15": "4",
+    "Group 16": "5",
+    "Group 17": "6",
+    "Group 18": "7",
+    "Group 19": "8",
+    "Group 20": "9"
+}
+
+recognizer.build_reference_database("Images", label_mapping)
+
+print("Références enregistrées :")
+print(recognizer.reference_database.keys())
+
+label, distance = recognizer.recognize_image("Images/Group test.png")
+
+print("Chiffre reconnu :", label)
+print("Distance :", distance)

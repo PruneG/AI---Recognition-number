@@ -43,3 +43,35 @@ class ImageRecognition:
         matrix = self.convert_to_matrix(resized_image)
         return matrix
         
+    # Je crée une fonction qui construit une base de données de référence à partir d'un dossier d'images et du mapping des labels
+    def build_reference_database(self, folder_path, label_mapping):
+        for file_name in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, file_name)
+
+            if os.path.isfile(file_path)and file_name.lower().endswith((".png", ".jpg", ".jpeg")):
+                matrix = self.prepare_image(file_path)
+                file_label = os.path.splitext(file_name)[0]
+                
+                if file_label in label_mapping:
+                    real_label = label_mapping[file_label]
+                    self.store_reference(real_label, matrix)
+
+    # Je crée une fonction qui calcule la distance entre deux matrices pour évaluer la similarité entre l'image test et les références
+    def calculate_distance(self, matrix1, matrix2):
+        distance = np.sum(np.abs(matrix1 - matrix2))
+        return distance
+    
+    # Je crée une fonction qui reconnaît une image en comparant sa matrice avec celles de la base de données de référence et en retournant le label de la référence la plus proche et la distance associée
+    def recognize_image(self, path):
+        test_matrix = self.prepare_image(path)
+        best_label = None
+        best_distance = float("inf")
+
+        for label, ref_matrix in self.reference_database.items():
+            distance = self.calculate_distance(test_matrix, ref_matrix)
+
+            if distance < best_distance:
+                best_distance = distance
+                best_label = label
+                
+        return best_label, best_distance
